@@ -72,11 +72,13 @@ class PasswordStrengthGUI:
 
     def load_model(self):
         try:
+            # Dynamically determine the model path
             if getattr(sys, 'frozen', False):  # If running as a bundled executable
                 bundle_dir = sys._MEIPASS
                 model_path = os.path.join(bundle_dir, "NewModelRF_v2.joblib")
-            else:  # If running in a local development environment
-                model_path = r'C:\Users\hat94\Desktop\College Mini Project\Password Strength Analyzer\NewModelRF_v2.joblib'
+            else:  # If running as a script
+                script_dir = os.path.dirname(os.path.abspath(__file__))
+                model_path = os.path.join(script_dir, "NewModelRF_v2.joblib")
 
             if not os.path.exists(model_path):
                 raise FileNotFoundError(f"Model file not found at {model_path}")
@@ -87,6 +89,7 @@ class PasswordStrengthGUI:
             logging.error(f"Error loading model: {str(e)}")
             raise
 
+    # Rest of the code remains unchanged
     def smooth_update_progress(self, target_value):
         current_value = self.progress['value']
         increment = (target_value - current_value) / 20.0
@@ -101,6 +104,7 @@ class PasswordStrengthGUI:
                 self.progress['value'] = target_value
 
         update_progress()
+
 
     def extract_features(self, password):
         length = len(password)
