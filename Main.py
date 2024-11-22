@@ -218,6 +218,7 @@ class PasswordStrengthGUI:
         self.password_entry.delete(0, tk.END)
         self.password_entry.insert(0, password)
 
+        self.check_password()
     def export_results(self):
         file_path = filedialog.asksaveasfilename(defaultextension=".json", filetypes=[("JSON files", "*.json")])
         if file_path:
