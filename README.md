@@ -4,7 +4,7 @@ Hello , In this project i have developed a ML based password strength analyzer t
 * IMPORTANT!!!
   ------------
 
-The only way for this project to work on ur system is when both "CurrMain.py" and "NewModelRF_v2.joblib" to be in the same directory , the code "CurrMain.py" automatically 
+The only way for this project to work on ur system is when both "Main.py" and "NewModelRF_v2.joblib" to be in the same directory , the code "Main.py" automatically 
 retrieves ur model's path before executing.
 
 
