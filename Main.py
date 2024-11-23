@@ -220,7 +220,7 @@ class PasswordStrengthGUI:
 
         self.check_password()
     def export_results(self):
-        file_path = filedialog.asksaveasfilename(defaultextension=".json", filetypes=[("JSON files", "*.json")])
+        file_path = filedialog.asksaveasfilename(defaultextension=".json", filetypes=[("TXT files", "*.txt")])
         if file_path:
             try:
                 with open(file_path, 'w') as f:
