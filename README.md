@@ -13,7 +13,7 @@ retrieves ur model's path before executing.
 
 The Model that i have used is Random Forest since It Handles Multiple Features Effectively,Robustness Against Overfitting, Support for Categorical and Numerical Data and many 
 more but these were the main features that made me use Random Forest algo. The model was mainly trained using data set taken from kaggle which had around 670K different passwords
-along with its strength("0" for Weak , "1" for Moderate and "2" for Strong) and also different features like ["length" , "has_uppercase" , "had_lowercase" , "has_digits" , "has_special"
+along with its strength(Weak , Moderate , Strong and Very Strong) and also different features like ["length" , "has_uppercase" , "had_lowercase" , "has_digits" , "has_special"
 , "has_unique_chars" ,  "has_entropy" , "has_sequential" , "has_repitition" , "strength_label" ] were further added into the data set on which it was initially trained , later on a data set 
 that had common passwords used in the world that is vulnerable against dictionary attacks were used to further train the model to accurately give the strength score if the user gives a password
 that was too common and were related/ found in any recent dictionary attacks the strength score is decremented.
@@ -21,7 +21,7 @@ that was too common and were related/ found in any recent dictionary attacks the
 * FEATURES INCLUDED
   -----------------
 
-  The "CurrMain.py" checks the following features in the given password ["length" , "has_uppercase" , "had_lowercase" , "has_digits" , "has_special" , "has_unique_chars" ,
+  The "Main.py" checks the following features for the given password ["length" , "has_uppercase" , "had_lowercase" , "has_digits" , "has_special" , "has_unique_chars" ,
   "has_entropy" , "has_sequential" , "has_repitition" , "strength_label" ]
 
   
