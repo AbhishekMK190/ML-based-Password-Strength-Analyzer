@@ -72,7 +72,6 @@ class PasswordStrengthGUI:
 
     def load_model(self):
         try:
-            # Dynamically determine the model path
             if getattr(sys, 'frozen', False):  # If running as a bundled executable
                 bundle_dir = sys._MEIPASS
                 model_path = os.path.join(bundle_dir, "NewModelRF_v2.joblib")
@@ -89,7 +88,6 @@ class PasswordStrengthGUI:
             logging.error(f"Error loading model: {str(e)}")
             raise
 
-    # Rest of the code remains unchanged
     def smooth_update_progress(self, target_value):
         current_value = self.progress['value']
         increment = (target_value - current_value) / 20.0
@@ -104,7 +102,6 @@ class PasswordStrengthGUI:
                 self.progress['value'] = target_value
 
         update_progress()
-
 
     def extract_features(self, password):
         length = len(password)
@@ -166,10 +163,6 @@ class PasswordStrengthGUI:
         features_df = pd.DataFrame([features], columns=feature_names)
 
         try:
-            # Print the features and prediction as requested
-            print(f"Making prediction with features: {features}")
-            
-            # Making prediction
             strength_prediction = self.model.predict(features_df)[0]
             strength_map = {"weak": "Weak", "moderate": "Moderate", "strong": "Strong", "very strong": "Very Strong"}
             strength = strength_map.get(str(strength_prediction).lower(), "Unknown")
@@ -177,15 +170,6 @@ class PasswordStrengthGUI:
             logging.error(f"Prediction error: {str(e)}")
             messagebox.showerror("Model Error", f"Prediction error: {str(e)}")
             strength = "Error"
-
-        # Explicitly setting prediction to 'weak' if the features result in this classification
-        if strength == "weak":
-            prediction = "weak"
-        else:
-            prediction = strength  # Otherwise, use the model's prediction
-
-        # Print the final prediction
-        print(f"Prediction: {prediction}")
 
         max_strength = 0
         if features[1] > 0: max_strength += 10  
@@ -201,10 +185,26 @@ class PasswordStrengthGUI:
 
         strength_percentage = min(max_strength, 100)
 
+        if strength_percentage >= 85:
+            strength = "Very Strong"
+        elif strength_percentage >= 70:
+            strength = "Strong"
+        elif strength_percentage >= 45:
+            strength = "Moderate"
+        else:
+            strength = "Weak"
+
         self.smooth_update_progress(strength_percentage)
-        self.result_label.config(text=f"Password Strength: {prediction}")
+        self.result_label.config(text=f"Password Strength: {strength}")
         self.suggestion_label.config(text=f"Suggested Strength: {strength_percentage}%")
         self.crack_time_label.config(text=f"Estimated Crack Time: {self.refined_estimate_crack_time(password)}")
+
+        self.results.append({
+            "password": password,
+            "strength": strength,
+            "percentage": strength_percentage,
+            "estimated_crack_time": self.refined_estimate_crack_time(password)
+        })
 
     def toggle_password(self):
         if self.show_password_var.get():
@@ -214,17 +214,31 @@ class PasswordStrengthGUI:
 
     def generate_password(self):
         length = random.randint(12, 16)
-        password = ''.join(random.choices(string.ascii_letters + string.digits + string.punctuation, k=length))
+        characters = string.ascii_letters + string.digits + string.punctuation
+        password = ''.join(random.choice(characters) for _ in range(length))
         self.password_entry.delete(0, tk.END)
         self.password_entry.insert(0, password)
-
         self.check_password()
+
     def export_results(self):
-        file_path = filedialog.asksaveasfilename(defaultextension=".json", filetypes=[("TXT files", "*.txt")])
+        if not self.results:
+            messagebox.showerror("Export Error", "No password data available to export.")
+            return
+
+        last_result = self.results[-1]
+        password = last_result.get("password", "")
+        strength = last_result.get("strength", "")
+
+        file_path = filedialog.asksaveasfilename(
+            defaultextension=".txt",
+            filetypes=[("Text files", "*.txt")],
+            title="Save Results As"
+        )
         if file_path:
             try:
                 with open(file_path, 'w') as f:
-                    json.dump(self.results, f)
+                    f.write(f"Password: {password}\n")
+                    f.write(f"Strength: {strength}\n")
                 messagebox.showinfo("Export Successful", "Results exported successfully!")
             except Exception as e:
                 logging.error(f"Error exporting results: {str(e)}")
