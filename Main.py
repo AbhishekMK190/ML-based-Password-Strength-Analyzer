@@ -20,7 +20,7 @@ class PasswordStrengthGUI:
         self.master = master
         self.master.title("ML-based Password Strength Analyzer")
         self.master.geometry("500x450")
-        self.master.set_theme("black")
+        self.master.set_theme("arc")
 
         main_frame = ttk.Frame(self.master, padding=20)
         main_frame.pack(fill="both", expand=True)

@@ -5,7 +5,7 @@ from sklearn.metrics import accuracy_score
 import joblib
 
 # Step 1: Load the existing labeled data
-labeled_data_path = r"C:\Users\hat94\Desktop\College Mini Project\Labeled_data.csv"
+labeled_data_path = r"C:\Users\hat94\Desktop\ML based Password Strength Analyzer\Labeled_data.csv"
 labeled_data = pd.read_csv(labeled_data_path)
 
 # Step 2: Load the list of common passwords from 'common_passwords.csv'
@@ -19,7 +19,7 @@ def load_common_passwords(file_path):
         return pd.DataFrame(columns=['password', 'strength_label'])
 
 # Load common passwords and label them as weak
-common_passwords_path = r"C:\Users\hat94\Desktop\College Mini Project\Password Strength Analyzer\common_passwords.csv"
+common_passwords_path = r"C:\Users\hat94\Desktop\ML based Password Strength Analyzer\common_passwords.csv"
 common_password_data = load_common_passwords(common_passwords_path)
 
 # Step 3: Append the common passwords data to the original labeled data
@@ -56,7 +56,7 @@ accuracy = accuracy_score(y_test, y_pred) * 100
 print(f"Model retrained. Test accuracy: {accuracy:.2f}%")
 
 # Save the retrained model
-model_save_path = r"C:\Users\hat94\Desktop\College Mini Project\NewModelRF_v2_with_common_passwords.joblib"
+model_save_path = r"C:\Users\hat94\Desktop\ML based Password Strength Analyzer\NewModelRF_v2.joblib"
 joblib.dump(model, model_save_path)
 print(f"Model saved as '{model_save_path}'.")
 
@@ -80,7 +80,7 @@ def assess_password_strength(password):
     return predicted_strength
 
 # Test the function with an example password
-test_password = "AbhishekMK123#" 
+test_password = "Qwerty" 
 assess_password_strength(test_password)
 
 
