@@ -20,7 +20,7 @@ class PasswordStrengthGUI:
         self.master = master
         self.master.title("ML-based Password Strength Analyzer")
         self.master.geometry("500x450")
-        self.master.set_theme("arc")
+        self.master.set_theme("black")
 
         main_frame = ttk.Frame(self.master, padding=20)
         main_frame.pack(fill="both", expand=True)
@@ -104,7 +104,17 @@ class PasswordStrengthGUI:
         update_progress()
 
     def extract_features(self, password):
+        common_passwords_file = 'common_passwords.csv'
+        if not hasattr(self, 'common_passwords'):
+            if os.path.exists(common_passwords_file):
+                self.common_passwords = set(pd.read_csv(common_passwords_file)['password'].tolist())
+            else:
+                self.common_passwords = set()
+
+        is_common_password = 1 if password in self.common_passwords else 0 
+        
         length = len(password)
+        
         has_uppercase = sum(1 for c in password if c.isupper())
         has_lowercase = sum(1 for c in password if c.islower())
         has_digits = sum(1 for c in password if c.isdigit())
@@ -113,8 +123,8 @@ class PasswordStrengthGUI:
         has_entropy = has_unique_chars / length if length > 0 else 0
         has_sequential = sum(1 for i in range(len(password) - 1) if ord(password[i + 1]) == ord(password[i]) + 1)
         has_repetition = sum(1 for i in range(len(password) - 1) if password[i + 1] == password[i])
-
-        return [length, has_uppercase, has_lowercase, has_digits, has_special, has_unique_chars, has_entropy, has_sequential, has_repetition]
+        
+        return [length, has_uppercase, has_lowercase, has_digits, has_special, has_unique_chars, has_entropy, has_sequential, has_repetition , is_common_password]
 
     def refined_estimate_crack_time(self, password):
         char_space = 0
@@ -158,7 +168,7 @@ class PasswordStrengthGUI:
         features = self.extract_features(password)
 
         feature_names = ["length", "has_uppercase", "has_lowercase", "has_digits", "has_special", 
-                        "has_unique_chars", "has_entropy", "has_sequential", "has_repetition"]
+                        "has_unique_chars", "has_entropy", "has_sequential", "has_repetition" , "is_common_password"]
 
         features_df = pd.DataFrame([features], columns=feature_names)
 
