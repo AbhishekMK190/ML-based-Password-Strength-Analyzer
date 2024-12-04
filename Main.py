@@ -181,37 +181,37 @@ class PasswordStrengthGUI:
             messagebox.showerror("Model Error", f"Prediction error: {str(e)}")
             strength = "Error"
 
-        # Calculate strength percentage
+        
         max_strength = 0
-        if features[1] > 0: max_strength += 10  # Uppercase
-        if features[2] > 0: max_strength += 10  # Lowercase
-        if features[3] > 0: max_strength += 10  # Digits
-        if features[4] > 0: max_strength += 10  # Special characters
-        if features[5] > 0: max_strength += 10  # Unique characters
-        if features[6] > 0.5: max_strength += 10  # High entropy
-        if features[7] == 0: max_strength += 5  # No sequential patterns
-        if features[8] == 0: max_strength += 5  # No repetitions
-        if features[0] >= 12: max_strength += 15  # Good length
-        if features[0] >= 16: max_strength += 15  # Very strong length
+        if features[1] > 0: max_strength += 10  
+        if features[2] > 0: max_strength += 10 
+        if features[3] > 0: max_strength += 10  
+        if features[4] > 0: max_strength += 10  
+        if features[5] > 0: max_strength += 10  
+        if features[6] > 0.5: max_strength += 10  
+        if features[7] == 0: max_strength += 5  
+        if features[8] == 0: max_strength += 5  
+        if features[0] >= 12: max_strength += 15  
+        if features[0] >= 16: max_strength += 15  
 
         strength_percentage = min(max_strength, 100)
 
-        if strength_percentage >= 85:
+        if strength_percentage > 85:
             strength = "Very Strong"
-        elif strength_percentage >= 70:
+        elif strength_percentage >= 70 and strength_percentage <= 85:
             strength = "Strong"
         elif strength_percentage >= 45:
             strength = "Moderate"
         else:
             strength = "Weak"
 
-        # Update progress bar and strength labels
+   
         self.smooth_update_progress(strength_percentage)
         self.result_label.config(text=f"Password Strength: {strength}")
         self.crack_time_label.config(text=f"Estimated Crack Time: {self.refined_estimate_crack_time(password)}")
         self.suggestion_label.config(text=f"Strength: {strength_percentage}%")
 
-        # Provide suggestions
+        
         suggestions = []
         if features[0] < 12:
             suggestions.append("Increase the length to at least 12 characters.")
@@ -255,12 +255,50 @@ class PasswordStrengthGUI:
             self.password_entry.config(show="*")
 
     def generate_password(self):
-        length = random.randint(12, 16)
-        characters = string.ascii_letters + string.digits + string.punctuation
-        password = ''.join(random.choice(characters) for _ in range(length))
+        while True:
+            # Generate a password of length between 12 and 16
+            length = random.randint(12, 16)
+            password = []
+
+            # Ensure at least one of each required character type
+            password.append(random.choice(string.ascii_uppercase))  # Uppercase
+            password.append(random.choice(string.ascii_lowercase))  # Lowercase
+            password.append(random.choice(string.digits))           # Digit
+            password.append(random.choice(string.punctuation))      # Special Character
+
+            # Fill the rest of the password with random characters
+            remaining_length = length - len(password)
+            all_characters = string.ascii_letters + string.digits + string.punctuation
+            password.extend(random.choices(all_characters, k=remaining_length))
+
+            # Shuffle to ensure randomness
+            random.shuffle(password)
+            password = ''.join(password)
+
+            # Check if the generated password meets all criteria
+            features = self.extract_features(password)
+            max_strength = 0
+            if features[1] > 0: max_strength += 10  # Uppercase
+            if features[2] > 0: max_strength += 10  # Lowercase
+            if features[3] > 0: max_strength += 10  # Digit
+            if features[4] > 0: max_strength += 10  # Special Character
+            if features[5] > 0: max_strength += 10  # Unique Characters
+            if features[6] > 0.5: max_strength += 10  # Entropy
+            if features[7] == 0: max_strength += 5  # No sequential characters
+            if features[8] == 0: max_strength += 5  # No repeated characters
+            if features[0] >= 12: max_strength += 15  # Minimum length 12
+            if features[0] >= 16: max_strength += 15  # Length 16+
+
+            strength_percentage = min(max_strength, 100)
+
+            if strength_percentage >= 90:
+                break  # Valid password generated
+
+        # Set the generated password in the entry field and check its strength
         self.password_entry.delete(0, tk.END)
         self.password_entry.insert(0, password)
         self.check_password()
+
 
     def export_results(self):
         if not self.results:
