@@ -19,7 +19,7 @@ class PasswordStrengthGUI:
     def __init__(self, master):
         self.master = master
         self.master.title("ML-based Password Strength Analyzer")
-        self.master.geometry("500x450")
+        self.master.geometry("550x500")
         self.master.set_theme("black")
 
         main_frame = ttk.Frame(self.master, padding=20)
@@ -168,7 +168,7 @@ class PasswordStrengthGUI:
         features = self.extract_features(password)
 
         feature_names = ["length", "has_uppercase", "has_lowercase", "has_digits", "has_special", 
-                        "has_unique_chars", "has_entropy", "has_sequential", "has_repetition" , "is_common_password"]
+                        "has_unique_chars", "has_entropy", "has_sequential", "has_repetition", "is_common_password"]
 
         features_df = pd.DataFrame([features], columns=feature_names)
 
@@ -181,17 +181,18 @@ class PasswordStrengthGUI:
             messagebox.showerror("Model Error", f"Prediction error: {str(e)}")
             strength = "Error"
 
+        # Calculate strength percentage
         max_strength = 0
-        if features[1] > 0: max_strength += 10  
-        if features[2] > 0: max_strength += 10  
-        if features[3] > 0: max_strength += 10  
-        if features[4] > 0: max_strength += 10  
-        if features[5] > 0: max_strength += 10  
-        if features[6] > 0.5: max_strength += 10  
-        if features[7] == 0: max_strength += 5  
-        if features[8] == 0: max_strength += 5  
-        if features[0] >= 12: max_strength += 15  
-        if features[0] >= 16: max_strength += 15  
+        if features[1] > 0: max_strength += 10  # Uppercase
+        if features[2] > 0: max_strength += 10  # Lowercase
+        if features[3] > 0: max_strength += 10  # Digits
+        if features[4] > 0: max_strength += 10  # Special characters
+        if features[5] > 0: max_strength += 10  # Unique characters
+        if features[6] > 0.5: max_strength += 10  # High entropy
+        if features[7] == 0: max_strength += 5  # No sequential patterns
+        if features[8] == 0: max_strength += 5  # No repetitions
+        if features[0] >= 12: max_strength += 15  # Good length
+        if features[0] >= 16: max_strength += 15  # Very strong length
 
         strength_percentage = min(max_strength, 100)
 
@@ -204,10 +205,39 @@ class PasswordStrengthGUI:
         else:
             strength = "Weak"
 
+        # Update progress bar and strength labels
         self.smooth_update_progress(strength_percentage)
         self.result_label.config(text=f"Password Strength: {strength}")
-        self.suggestion_label.config(text=f"Suggested Strength: {strength_percentage}%")
         self.crack_time_label.config(text=f"Estimated Crack Time: {self.refined_estimate_crack_time(password)}")
+        self.suggestion_label.config(text=f"Strength: {strength_percentage}%")
+
+        # Provide suggestions
+        suggestions = []
+        if features[0] < 12:
+            suggestions.append("Increase the length to at least 12 characters.")
+        if features[1] == 0:
+            suggestions.append("Add uppercase letters.")
+        if features[2] == 0:
+            suggestions.append("Add lowercase letters.")
+        if features[3] == 0:
+            suggestions.append("Include digits.")
+        if features[4] == 0:
+            suggestions.append("Use special characters (e.g., @, #, $).")
+        if features[7] > 0:
+            suggestions.append("Avoid sequential patterns (e.g., '123' or 'abc').")
+        if features[8] > 0:
+            suggestions.append("Reduce repeated characters (e.g., 'aaa').")
+        if features[9] == 1:
+            suggestions.append("Avoid using common passwords.")
+
+        # Append suggestions to the suggestion label
+        if suggestions:
+            suggestion_text = "Suggestions:\n" + "\n".join(f"- {s}" for s in suggestions)
+        else:
+            suggestion_text = "Your password is strong! No changes needed."
+
+        # Show suggestions and percentage together
+        self.suggestion_label.config(text=f"Strength: {strength_percentage}%\n{suggestion_text}")
 
         self.results.append({
             "password": password,
@@ -215,6 +245,8 @@ class PasswordStrengthGUI:
             "percentage": strength_percentage,
             "estimated_crack_time": self.refined_estimate_crack_time(password)
         })
+
+
 
     def toggle_password(self):
         if self.show_password_var.get():
