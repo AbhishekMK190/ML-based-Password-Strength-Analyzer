@@ -1,5 +1,4 @@
 import os
-import json
 import random
 import string
 import logging
@@ -8,7 +7,6 @@ import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 from ttkthemes import ThemedTk
 import pandas as pd
-import time
 import math
 import sys
 
@@ -72,10 +70,10 @@ class PasswordStrengthGUI:
 
     def load_model(self):
         try:
-            if getattr(sys, 'frozen', False):  # If running as a bundled executable
+            if getattr(sys, 'frozen', False):  
                 bundle_dir = sys._MEIPASS
                 model_path = os.path.join(bundle_dir, "NewModelRF_v2.joblib")
-            else:  # If running as a script
+            else:  
                 script_dir = os.path.dirname(os.path.abspath(__file__))
                 model_path = os.path.join(script_dir, "NewModelRF_v2.joblib")
 
@@ -140,7 +138,7 @@ class PasswordStrengthGUI:
         password_length = len(password)
         entropy = password_length * (math.log2(char_space) if char_space > 0 else 0)
 
-        cracking_speed = 1e10  # Assumed speed of 10 billion guesses per second
+        cracking_speed = 1e10  
 
         total_combinations = 2 ** entropy
         crack_time = total_combinations / cracking_speed
@@ -230,13 +228,12 @@ class PasswordStrengthGUI:
         if features[9] == 1:
             suggestions.append("Avoid using common passwords.")
 
-        # Append suggestions to the suggestion label
+        
         if suggestions:
             suggestion_text = "Suggestions:\n" + "\n".join(f"- {s}" for s in suggestions)
         else:
             suggestion_text = "Your password is strong! No changes needed."
 
-        # Show suggestions and percentage together
         self.suggestion_label.config(text=f"Strength: {strength_percentage}%\n{suggestion_text}")
 
         self.results.append({
@@ -247,7 +244,6 @@ class PasswordStrengthGUI:
         })
 
 
-
     def toggle_password(self):
         if self.show_password_var.get():
             self.password_entry.config(show="")
@@ -256,45 +252,45 @@ class PasswordStrengthGUI:
 
     def generate_password(self):
         while True:
-            # Generate a password of length between 12 and 16
+            
             length = random.randint(12, 16)
             password = []
 
-            # Ensure at least one of each required character type
-            password.append(random.choice(string.ascii_uppercase))  # Uppercase
-            password.append(random.choice(string.ascii_lowercase))  # Lowercase
-            password.append(random.choice(string.digits))           # Digit
-            password.append(random.choice(string.punctuation))      # Special Character
+            
+            password.append(random.choice(string.ascii_uppercase))  
+            password.append(random.choice(string.ascii_lowercase))  
+            password.append(random.choice(string.digits))           
+            password.append(random.choice(string.punctuation))      
 
-            # Fill the rest of the password with random characters
+            
             remaining_length = length - len(password)
             all_characters = string.ascii_letters + string.digits + string.punctuation
             password.extend(random.choices(all_characters, k=remaining_length))
 
-            # Shuffle to ensure randomness
+            
             random.shuffle(password)
             password = ''.join(password)
 
-            # Check if the generated password meets all criteria
+            
             features = self.extract_features(password)
             max_strength = 0
-            if features[1] > 0: max_strength += 10  # Uppercase
-            if features[2] > 0: max_strength += 10  # Lowercase
-            if features[3] > 0: max_strength += 10  # Digit
-            if features[4] > 0: max_strength += 10  # Special Character
-            if features[5] > 0: max_strength += 10  # Unique Characters
-            if features[6] > 0.5: max_strength += 10  # Entropy
-            if features[7] == 0: max_strength += 5  # No sequential characters
-            if features[8] == 0: max_strength += 5  # No repeated characters
-            if features[0] >= 12: max_strength += 15  # Minimum length 12
-            if features[0] >= 16: max_strength += 15  # Length 16+
+            if features[1] > 0: max_strength += 10  
+            if features[2] > 0: max_strength += 10  
+            if features[3] > 0: max_strength += 10  
+            if features[4] > 0: max_strength += 10  
+            if features[5] > 0: max_strength += 10  
+            if features[6] > 0.5: max_strength += 10  
+            if features[7] == 0: max_strength += 5  
+            if features[8] == 0: max_strength += 5  
+            if features[0] >= 12: max_strength += 15  
+            if features[0] >= 16: max_strength += 15  
 
             strength_percentage = min(max_strength, 100)
 
             if strength_percentage >= 90:
-                break  # Valid password generated
+                break  
 
-        # Set the generated password in the entry field and check its strength
+        
         self.password_entry.delete(0, tk.END)
         self.password_entry.insert(0, password)
         self.check_password()
