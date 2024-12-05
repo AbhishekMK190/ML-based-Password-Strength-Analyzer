@@ -56,7 +56,7 @@ accuracy = accuracy_score(y_test, y_pred) * 100
 print(f"Model retrained. Test accuracy: {accuracy:.2f}%")
 
 # Save the retrained model
-model_save_path = r"C:\Users\hat94\Desktop\ML based Password Strength Analyzer\NewModelRF_v2.joblib"
+model_save_path = r"C:\Users\hat94\Desktop\ML based Password Strength Analyzer\NewModelRF_V4.joblib"
 joblib.dump(model, model_save_path)
 print(f"Model saved as '{model_save_path}'.")
 

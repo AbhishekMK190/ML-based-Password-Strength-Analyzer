@@ -17,7 +17,7 @@ class PasswordStrengthGUI:
     def __init__(self, master):
         self.master = master
         self.master.title("ML-based Password Strength Analyzer")
-        self.master.geometry("550x500")
+        self.master.geometry("550x550")
         self.master.set_theme("black")
 
         main_frame = ttk.Frame(self.master, padding=20)
@@ -102,7 +102,7 @@ class PasswordStrengthGUI:
         update_progress()
 
     def extract_features(self, password):
-        common_passwords_file = 'new_common_passwords.csv'
+        common_passwords_file = 'common_passwords.csv'
         if not hasattr(self, 'common_passwords'):
             if os.path.exists(common_passwords_file):
                 self.common_passwords = set(pd.read_csv(common_passwords_file)['password'].tolist())
