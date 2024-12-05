@@ -72,10 +72,10 @@ class PasswordStrengthGUI:
         try:
             if getattr(sys, 'frozen', False):  
                 bundle_dir = sys._MEIPASS
-                model_path = os.path.join(bundle_dir, "NewModelRF_v2.joblib")
+                model_path = os.path.join(bundle_dir, "NewModelRF_V4.joblib")
             else:  
                 script_dir = os.path.dirname(os.path.abspath(__file__))
-                model_path = os.path.join(script_dir, "NewModelRF_v2.joblib")
+                model_path = os.path.join(script_dir, "NewModelRF_v4.joblib")
 
             if not os.path.exists(model_path):
                 raise FileNotFoundError(f"Model file not found at {model_path}")
@@ -194,23 +194,14 @@ class PasswordStrengthGUI:
 
         strength_percentage = min(max_strength, 100)
 
-        if strength_percentage > 85:
-            strength = "Very Strong"
-        elif strength_percentage >= 70 and strength_percentage <= 85:
-            strength = "Strong"
-        elif strength_percentage >= 45:
-            strength = "Moderate"
-        else:
-            strength = "Weak"
-
-   
         self.smooth_update_progress(strength_percentage)
-        self.result_label.config(text=f"Password Strength: {strength}")
+        self.result_label.config(text=f"Password Strength: {strength_percentage}%")
         self.crack_time_label.config(text=f"Estimated Crack Time: {self.refined_estimate_crack_time(password)}")
         self.suggestion_label.config(text=f"Strength: {strength_percentage}%")
 
-        
         suggestions = []
+        if features[9] == 1:
+            suggestions.append("Your password is vulnerable to a dictionary attack. Change it immediately.")
         if features[0] < 12:
             suggestions.append("Increase the length to at least 12 characters.")
         if features[1] == 0:
@@ -225,23 +216,24 @@ class PasswordStrengthGUI:
             suggestions.append("Avoid sequential patterns (e.g., '123' or 'abc').")
         if features[8] > 0:
             suggestions.append("Reduce repeated characters (e.g., 'aaa').")
-        if features[9] == 1:
-            suggestions.append("Avoid using common passwords.")
-
         
+              # Set the text color to red for warning
+        else:
+            self.suggestion_label.config(foreground="white")
+
         if suggestions:
             suggestion_text = "Suggestions:\n" + "\n".join(f"- {s}" for s in suggestions)
         else:
             suggestion_text = "Your password is strong! No changes needed."
 
         self.suggestion_label.config(text=f"Strength: {strength_percentage}%\n{suggestion_text}")
-
+        
         self.results.append({
             "password": password,
-            "strength": strength,
-            "percentage": strength_percentage,
+            "strength": strength_percentage,
             "estimated_crack_time": self.refined_estimate_crack_time(password)
         })
+
 
 
     def toggle_password(self):
