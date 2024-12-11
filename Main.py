@@ -138,7 +138,7 @@ class PasswordStrengthGUI:
         password_length = len(password)
         entropy = password_length * (math.log2(char_space) if char_space > 0 else 0)
 
-        cracking_speed = 1e10  
+        cracking_speed = 1e10
 
         total_combinations = 2 ** entropy
         crack_time = total_combinations / cracking_speed
@@ -217,7 +217,7 @@ class PasswordStrengthGUI:
         if features[8] > 0:
             suggestions.append("Reduce repeated characters (e.g., 'aaa').")
         
-              # Set the text color to red for warning
+              
         else:
             self.suggestion_label.config(foreground="white")
 
@@ -233,7 +233,6 @@ class PasswordStrengthGUI:
             "strength": strength_percentage,
             "estimated_crack_time": self.refined_estimate_crack_time(password)
         })
-
 
 
     def toggle_password(self):

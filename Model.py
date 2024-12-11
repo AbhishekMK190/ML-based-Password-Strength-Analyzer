@@ -168,3 +168,57 @@ def assess_password_strength(password):
 test_password = "AbhishekMK123#" 
 assess_password_strength(test_password)
 
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.metrics import classification_report, confusion_matrix
+
+# Step 1: Confusion Matrix
+def plot_confusion_matrix(y_true, y_pred):
+    cm = confusion_matrix(y_true, y_pred, labels=model.classes_)
+    plt.figure(figsize=(8, 6))
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=model.classes_, yticklabels=model.classes_)
+    plt.xlabel('Predicted')
+    plt.ylabel('Actual')
+    plt.title('Confusion Matrix')
+    plt.show()
+
+print("Confusion Matrix:")
+plot_confusion_matrix(y_test, y_pred)
+
+# Step 2: Classification Report
+print("Classification Report:")
+print(classification_report(y_test, y_pred, target_names=model.classes_))
+
+# Step 3: Feature Importance
+def plot_feature_importance(model, feature_names):
+    importance = model.feature_importances_
+    sorted_idx = importance.argsort()
+    plt.figure(figsize=(10, 8))
+    plt.barh([feature_names[i] for i in sorted_idx], importance[sorted_idx], color='teal')
+    plt.xlabel('Feature Importance')
+    plt.ylabel('Feature')
+    plt.title('Feature Importance of the Random Forest Model')
+    plt.show()
+
+print("Feature Importance:")
+plot_feature_importance(model, X.columns)
+
+# Step 4: Training vs Testing Accuracy Curve
+train_sizes = range(1, len(X_train), max(1, len(X_train) // 10))
+train_scores = []
+test_scores = []
+
+for size in train_sizes:
+    model.fit(X_train[:size], y_train[:size])
+    train_scores.append(model.score(X_train[:size], y_train[:size]))
+    test_scores.append(model.score(X_test, y_test))
+
+plt.figure(figsize=(10, 6))
+plt.plot(train_sizes, train_scores, label='Training Accuracy', marker='o')
+plt.plot(train_sizes, test_scores, label='Testing Accuracy', marker='o')
+plt.xlabel('Training Data Size')
+plt.ylabel('Accuracy')
+plt.title('Training vs Testing Accuracy')
+plt.legend()
+plt.grid()
+plt.show()
