@@ -201,7 +201,7 @@ class PasswordStrengthGUI:
 
         suggestions = []
         if features[9] == 1:
-            suggestions.append("Your password is vulnerable to a dictionary attack. Change it immediately.")
+            suggestions.append("Your password is vulnerable to a dictionary attack. Do address it immediately.")
         if features[0] < 12:
             suggestions.append("Increase the length to at least 12 characters.")
         if features[1] == 0:
